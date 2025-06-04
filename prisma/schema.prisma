@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  documents Document[]
+  purchases Purchase[]
+  reports   Report[]
+}
+
+model AIData {
+  id          String   @id @default(cuid())
+  content     Json     // Stores the AI-generated data in JSON format
+  type        String   // Type of AI data (e.g., "sentiment", "behavior", "feedback")
+  metadata    Json?    // Additional metadata about the data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  reports     Report[]
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  data        Json     // Stores the report data and visualizations
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  aiDataId    String
+  aiData      AIData   @relation(fields: [aiDataId], references: [id])
+}
+
+model Document {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  price       Float
+  content     Json      // Stores the full document content
+  preview     Preview?  // Optional preview content
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  purchases   Purchase[]
+}
+
+model Preview {
+  id          String   @id @default(cuid())
+  content     Json     // Stores the preview content (limited version)
+  documentId  String   @unique
+  document    Document @relation(fields: [documentId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Purchase {
+  id          String   @id @default(cuid())
+  userId      String
+  documentId  String
+  user        User     @relation(fields: [userId], references: [id])
+  document    Document @relation(fields: [documentId], references: [id])
+  purchasedAt DateTime @default(now())
+}
