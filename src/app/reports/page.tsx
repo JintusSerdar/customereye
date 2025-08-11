@@ -1,7 +1,7 @@
 // Reports page for CustomerEye
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Filter, Grid, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,13 +14,12 @@ import {
 } from "@/components/ui/select";
 import ReportCard, { Report } from "@/components/ReportCard";
 import ReportFilters, { Filters } from "@/components/ReportFilters";
-import React from "react"; // Added missing import for React
 
 const mockReports: Report[] = [
   {
     id: 1,
     company: "Advance America",
-    industry: "Money Insurance",
+    industry: "Money & Insurance",
     rating: 4.8,
     reviewCount: 15420,
     summary:
@@ -41,7 +40,7 @@ const mockReports: Report[] = [
   {
     id: 2,
     company: "LocalBite Restaurant",
-    industry: "Restaurants Bars",
+    industry: "Restaurants & Bars",
     rating: 4.1,
     reviewCount: 287,
     summary:
@@ -56,7 +55,7 @@ const mockReports: Report[] = [
   {
     id: 3,
     company: "TechFlow Software",
-    industry: "Electronics Technology",
+    industry: "Electronics & Technology",
     rating: 3.9,
     reviewCount: 156,
     summary:
@@ -71,7 +70,7 @@ const mockReports: Report[] = [
   {
     id: 4,
     company: "Wellness First Clinic",
-    industry: "Health Medical",
+    industry: "Health & Medical",
     rating: 4.2,
     reviewCount: 198,
     summary:
@@ -86,7 +85,7 @@ const mockReports: Report[] = [
   {
     id: 5,
     company: "CraftWorks Furniture",
-    industry: "Shopping Fashion",
+    industry: "Shopping & Fashion",
     rating: 4.0,
     reviewCount: 124,
     summary:
@@ -101,7 +100,7 @@ const mockReports: Report[] = [
   {
     id: 6,
     company: "BrightStart Education",
-    industry: "Education Training",
+    industry: "Education & Training",
     rating: 4.4,
     reviewCount: 89,
     summary:
@@ -146,7 +145,7 @@ const mockReports: Report[] = [
   {
     id: 9,
     company: "Pawsome Pet Care",
-    industry: "Animals Pets",
+    industry: "Animals & Pets",
     rating: 4.5,
     reviewCount: 134,
     summary:
@@ -161,7 +160,7 @@ const mockReports: Report[] = [
   {
     id: 10,
     company: "Beauty Haven Spa",
-    industry: "Beauty Well-being",
+    industry: "Beauty & Well-being",
     rating: 4.2,
     reviewCount: 189,
     summary:
@@ -191,7 +190,7 @@ const mockReports: Report[] = [
   {
     id: 12,
     company: "Creative Corner Studio",
-    industry: "Hobbies Crafts",
+    industry: "Hobbies & Crafts",
     rating: 4.3,
     reviewCount: 98,
     summary:
@@ -206,7 +205,7 @@ const mockReports: Report[] = [
   {
     id: 13,
     company: "Garden Oasis Landscaping",
-    industry: "Home Garden",
+    industry: "Home & Garden",
     rating: 4.1,
     reviewCount: 145,
     summary:
@@ -236,7 +235,7 @@ const mockReports: Report[] = [
   {
     id: 15,
     company: "Local News Network",
-    industry: "Media Publishing",
+    industry: "Media & Publishing",
     rating: 4.0,
     reviewCount: 178,
     summary:
@@ -251,7 +250,7 @@ const mockReports: Report[] = [
   {
     id: 16,
     company: "Community Credit Union",
-    industry: "Money Insurance",
+    industry: "Money & Insurance",
     rating: 4.2,
     reviewCount: 234,
     summary:
@@ -266,7 +265,7 @@ const mockReports: Report[] = [
   {
     id: 17,
     company: "City Services Plus",
-    industry: "Public Local Services",
+    industry: "Public & Local Services",
     rating: 3.8,
     reviewCount: 167,
     summary:
@@ -296,7 +295,7 @@ const mockReports: Report[] = [
   {
     id: 19,
     company: "Reliable Transport",
-    industry: "Vehicles Transportation",
+    industry: "Vehicles & Transportation",
     rating: 4.0,
     reviewCount: 145,
     summary:
@@ -311,7 +310,7 @@ const mockReports: Report[] = [
   {
     id: 20,
     company: "Event Masters",
-    industry: "Events Entertainment",
+    industry: "Events & Entertainment",
     rating: 4.3,
     reviewCount: 123,
     summary:
@@ -395,7 +394,7 @@ const ReportsPage = () => {
   const currentReports = filteredReports.slice(startIndex, endIndex);
 
   // Reset to first page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, sortBy, filters]);
 
@@ -569,11 +568,17 @@ const ReportsPage = () => {
                     Previous
                   </Button>
                   {getPageNumbers().map((page, index) => (
-                    <React.Fragment key={index}>
+                    <>
                       {page === "..." ? (
-                        <span className="text-muted-foreground">...</span>
+                        <span
+                          key={`ellipsis-${index}`}
+                          className="text-muted-foreground"
+                        >
+                          ...
+                        </span>
                       ) : (
                         <Button
+                          key={page}
                           variant={page === currentPage ? "default" : "outline"}
                           onClick={() => handlePageChange(page as number)}
                           className="w-10 h-10 flex items-center justify-center"
@@ -581,7 +586,7 @@ const ReportsPage = () => {
                           {page}
                         </Button>
                       )}
-                    </React.Fragment>
+                    </>
                   ))}
                   <Button
                     variant="outline"
