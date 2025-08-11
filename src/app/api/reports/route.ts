@@ -1,3 +1,4 @@
+// API route for listing all reports
 import { NextResponse } from 'next/server';
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 

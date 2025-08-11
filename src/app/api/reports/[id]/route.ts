@@ -1,3 +1,4 @@
+// API route for individual report data at `/reports/[id]`
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -10,11 +11,11 @@ async function getTextFileContent(Bucket: string, Key: string) {
   return await response.Body?.transformToString();
 }
 
-export async function GET(req: NextRequest, { params }: { params: { company: string } }) {
-  const company = params.company;
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const id = params.id;
   const Bucket = process.env.AWS_BUCKET_NAME!;
-  const basePrefix = `preview-reports/Health Medical/GPT/${company}/`;
-  const graphPrefix = `preview-reports/Health Medical/GRAPH/${company}/`;
+  const basePrefix = `preview-reports/Health Medical/GPT/${id}/`;
+  const graphPrefix = `preview-reports/Health Medical/GRAPH/${id}/`;
 
   // List text files
   const textList = await s3.send(new ListObjectsV2Command({
