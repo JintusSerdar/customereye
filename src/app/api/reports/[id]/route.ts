@@ -11,8 +11,8 @@ async function getTextFileContent(Bucket: string, Key: string) {
   return await response.Body?.transformToString();
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = params.id;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const Bucket = process.env.AWS_BUCKET_NAME!;
   const basePrefix = `preview-reports/Health Medical/GPT/${id}/`;
   const graphPrefix = `preview-reports/Health Medical/GRAPH/${id}/`;
