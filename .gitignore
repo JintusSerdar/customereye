@@ -39,3 +39,9 @@ next-env.d.ts
 
 # temp files
 public/temp/
+
+# local sqlite databases
+prisma/*.db
+
+# local uploads (non-persistent in prod)
+uploads/
