@@ -7,22 +7,12 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Star, Calendar, Users, Download, Eye } from "lucide-react";
+import { Star, Calendar, Users, Eye } from "lucide-react";
 
-export interface Report {
-  id: number;
-  company: string;
-  industry: string;
-  rating: number;
-  reviewCount: number;
-  summary: string;
-  tags: string[];
-  reportType: string;
-  language: string;
-  date: string;
-  isPaid: boolean;
-  logo: string;
-}
+import { FrontendReport } from "@/types";
+
+// Use FrontendReport directly instead of extending it
+export type Report = FrontendReport;
 
 interface ReportCardProps {
   report: Report;
@@ -117,8 +107,7 @@ const ReportCard = ({ report, viewMode }: ReportCardProps) => {
                     size="sm"
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
-                    <Download className="h-4 w-4 mr-2" />
-                    {report.isPaid ? "Buy Report" : "Download"}
+                    {report.isPaid ? "Buy Report" : "Buy"}
                   </Button>
                 </div>
               </div>
@@ -188,8 +177,7 @@ const ReportCard = ({ report, viewMode }: ReportCardProps) => {
               size="sm"
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              <Download className="h-4 w-4 mr-2" />
-              {report.isPaid ? "Buy" : "Download"}
+              {report.isPaid ? "Buy" : "Buy"}
             </Button>
           </CardFooter>
         </>

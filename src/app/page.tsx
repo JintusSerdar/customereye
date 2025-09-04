@@ -99,7 +99,7 @@ const Index = () => {
       color: "text-purple-600",
     },
     {
-      label: "PDF Reports Generated",
+              label: "Reports Generated",
       value: "150+",
       icon: FileText,
       color: "text-secondary",
@@ -156,7 +156,7 @@ const Index = () => {
     {
       icon: Award,
       title: "Actionable Reports",
-      description: "150+ PDF reports generated with detailed insights",
+              description: "150+ reports generated with detailed insights",
     },
   ];
 
@@ -200,7 +200,7 @@ const Index = () => {
     {
       step: 3,
       title: "Report Generation",
-      description: "Get detailed PDF reports with actionable recommendations",
+              description: "Get detailed reports with actionable recommendations",
       icon: FileText,
     },
   ];
@@ -211,7 +211,7 @@ const Index = () => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [testimonials.length]);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (

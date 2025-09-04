@@ -1,15 +1,12 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -18,28 +15,42 @@ model User {
   name    String?
   email   String?  @unique
   reports Report[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Report {
   id          String   @id @default(cuid())
   title       String
   description String?
-  data        Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  documentId  String
-  document    Document @relation(fields: [documentId], references: [id])
+  companyName String
+  industry   String
+  rating     Float
+  reviewCount Int
+  summary    String
+  tags       String   // JSON string for simplicity
+  reportType String   // "Free" or "Premium"
+  language   String
+  isPaid     Boolean  @default(false)
+  logo       String?  // File path or emoji
+  reportData String?  // JSON string for detailed report data
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  files      FileStorage[] // Relation to file storage
 }
 
-model Document {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  companyName String
-  price       Float    @default(0)
-  reports     Report[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// File storage model for reports and images
+model FileStorage {
+  id        String   @id @default(cuid())
+  filename  String
+  originalName String
+  path      String
+  type      String   // "report", "image", "pdf"
+  size      Int
+  mimeType  String
+  createdAt DateTime @default(now())
+  reportId  String?
+  report    Report?  @relation(fields: [reportId], references: [id])
 }

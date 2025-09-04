@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import Head from "next/head";
 import {
   ArrowLeft,
-  Download,
   Star,
   TrendingUp,
   TrendingDown,
@@ -30,7 +29,6 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReportPDF from "@/components/ReportPDF";
-import { downloadPDF } from "@/lib/pdfGenerator";
 
 // Sample data based on Advance America
 const reportData = {
@@ -475,7 +473,7 @@ function ReportDetailClient({ id }: { id: string }) {
               <TabsTrigger value="reviews">Reviews Analysis</TabsTrigger>
               <TabsTrigger value="engagement">Customer Engagement</TabsTrigger>
               <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-              <TabsTrigger value="pdf">PDF Report</TabsTrigger>
+                              <TabsTrigger value="pdf">Report Preview</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-8">
@@ -560,15 +558,14 @@ function ReportDetailClient({ id }: { id: string }) {
                   <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
                     <CardContent className="p-6 text-center">
                       <h3 className="text-xl font-bold mb-4">
-                        Get Full Report
+                        Purchase Full Report
                       </h3>
                       <p className="mb-6 text-primary-foreground/80">
-                        Access complete analysis with 50+ data points and
+                        Get complete analysis with 50+ data points and
                         actionable recommendations
                       </p>
                       <Button className="w-full mb-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground">
-                        <Download className="mr-2" size={16} />
-                        Download PDF ($49)
+                        Buy Report ($49)
                       </Button>
                       <Button
                         variant="outline"
@@ -827,39 +824,16 @@ function ReportDetailClient({ id }: { id: string }) {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-primary">
-                    Professional PDF Report
+                    Report Preview
                   </h2>
                   <Button
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                    onClick={async () => {
-                      try {
-                        console.log("Starting PDF download...");
-                        await downloadPDF("pdf-report", {
-                          filename: `${reportData.company
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")}-customer-review-report.pdf`,
-                          companyName: reportData.company,
-                        });
-                        console.log("PDF download completed successfully");
-                      } catch (error) {
-                        console.error("Error downloading PDF:", error);
-                        alert(
-                          `Failed to generate PDF: ${
-                            error instanceof Error
-                              ? error.message
-                              : "Unknown error"
-                          }`
-                        );
-                      }
-                    }}
                   >
-                    <Download className="mr-2" size={16} />
-                    Download PDF
+                    Buy Report
                   </Button>
                 </div>
                 <p className="text-muted-foreground">
-                  View the complete analysis report in a professional PDF format
-                  with detailed insights, charts, and recommendations.
+                  Preview the complete analysis report with detailed insights, charts, and recommendations.
                 </p>
                 <ReportPDF companyName={reportData.company} />
               </div>

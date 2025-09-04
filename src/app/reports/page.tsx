@@ -12,10 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ReportCard, { Report } from "@/components/ReportCard";
-import ReportFilters, { Filters } from "@/components/ReportFilters";
+import ReportCard from "@/components/ReportCard";
+import ReportFilters from "@/components/ReportFilters";
+import { FrontendReport, Filters } from "@/types";
 
-const mockReports: Report[] = [
+const mockReports: FrontendReport[] = [
   {
     id: 1,
     company: "Advance America",
@@ -378,7 +379,7 @@ const ReportsPage = () => {
           return a.company.localeCompare(b.company);
         case "z-a":
           return b.company.localeCompare(a.company);
-        case "most-downloaded":
+        case "most-popular":
           return b.reviewCount - a.reviewCount;
         case "highest-rated":
           return b.rating - a.rating;
@@ -485,8 +486,8 @@ const ReportsPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="most-recent">Most Recent</SelectItem>
-                    <SelectItem value="most-downloaded">
-                      Most Downloaded
+                    <SelectItem value="most-popular">
+                      Most Popular
                     </SelectItem>
                     <SelectItem value="highest-rated">Highest Rated</SelectItem>
                     <SelectItem value="a-z">A-Z</SelectItem>
