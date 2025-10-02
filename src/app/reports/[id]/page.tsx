@@ -22,6 +22,7 @@ import {
   CheckCircle,
   Clock,
   ThumbsUp,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -282,6 +283,45 @@ export default async function ReportDetail({
 function ReportDetailClient({ id }: { id: string }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+
+  // PDF download function
+  const handleDownloadPDF = async () => {
+    setIsDownloadingPDF(true);
+    try {
+      const response = await fetch('/api/pdf/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          companyName: reportData.company,
+          reportData: reportData 
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || 'Failed to generate PDF');
+      }
+
+      // Create blob and download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${reportData.company}-customer-analysis-report.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsDownloadingPDF(false);
+    }
+  };
 
   // SEO-friendly title and description
   const pageTitle = `${reportData.company} Customer Reviews & Analysis - CustomerEye`;
@@ -826,14 +866,25 @@ function ReportDetailClient({ id }: { id: string }) {
                   <h2 className="text-2xl font-bold text-primary">
                     Report Preview
                   </h2>
-                  <Button
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                    Buy Report
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={handleDownloadPDF}
+                      disabled={isDownloadingPDF}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {isDownloadingPDF ? 'Generating...' : 'Download PDF'}
+                    </Button>
+                    <Button
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    >
+                      Buy Report
+                    </Button>
+                  </div>
                 </div>
                 <p className="text-muted-foreground">
-                  Preview the complete analysis report with detailed insights, charts, and recommendations.
+                  Preview the complete analysis report with detailed insights, charts, and recommendations. 
+                  Click "Download PDF" to get a high-quality PDF version of this report.
                 </p>
                 <ReportPDF companyName={reportData.company} />
               </div>
