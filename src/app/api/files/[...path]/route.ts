@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '.env.local' });
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || 'us-west-1',
