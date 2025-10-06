@@ -147,51 +147,12 @@ vercel
 ---
 
 ## Environment Variables
-
-### Required Variables
-| Key | Value | Description |
-|-----|-------|-------------|
-| `DATABASE_URL` | `postgresql://...` | PostgreSQL connection string |
-| `AWS_ACCESS_KEY_ID` | `AKIA...` | AWS access key for S3 |
-| `AWS_SECRET_ACCESS_KEY` | `...` | AWS secret key for S3 |
-| `AWS_REGION` | `us-east-1` | AWS region |
-| `AWS_S3_BUCKET` | `customereye` | S3 bucket name |
-| `NEXTAUTH_URL` | `https://demo.customereye.ai` | Production URL |
-| `NEXTAUTH_SECRET` | `<secure-key>` | NextAuth secret |
-
-### Optional Variables
-| Key | Value | Description |
-|-----|-------|-------------|
-| `NODE_ENV` | `production` | Environment mode |
-| `VERCEL_URL` | `auto` | Vercel deployment URL |
-
----
-
-## 🚀 Current Project Status
-
-### ✅ Production Ready Features
-- **6,078 Companies** analyzed and uploaded
-- **15+ Industries** with clean data
-- **3 Countries** (US, CA, UK) supported
-- **Complete API** with filtering, sorting, pagination
-- **S3 Integration** with file proxy
-- **Responsive UI** with modern design
-- **Database Schema** optimized for queries
-
-### 📊 Data Status
-- **Total Reports**: 6,078
-- **Data Files**: 36,468+ files in S3
-- **Industries**: Beauty & Wellbeing, Vehicles & Transportation, etc.
-- **Rating System**: All ratings set to 0 (no fake data)
-- **File Structure**: Organized in S3 with proper naming
-
-### 🔧 Technical Status
-- **Next.js 15** with App Router
-- **Prisma ORM** with PostgreSQL
-- **AWS S3** for file storage
-- **Vercel** deployment ready
-- **TypeScript** fully implemented
-- **Tailwind CSS** for styling
+| Key | Value |
+|-----|-------|
+| `NODE_ENV` | `production` |
+| `DATABASE_URL` | `<your database url>` |
+| `NEXTAUTH_URL` | `https://demo.customereye.ai` |
+| `NEXTAUTH_SECRET` | `<secure key>` |
 
 ---
 
@@ -248,47 +209,6 @@ npm run start
 # Check for TypeScript errors
 npm run lint
 ```
-
----
-
-## ✅ Pre-Deployment Checklist
-
-### 🔧 Environment Setup
-- [ ] Database URL configured in Vercel
-- [ ] AWS S3 credentials added to Vercel
-- [ ] NEXTAUTH_SECRET generated and set
-- [ ] NEXTAUTH_URL set to production domain
-- [ ] All environment variables verified
-
-### 🗄️ Database
-- [ ] PostgreSQL database created and accessible
-- [ ] Prisma schema deployed (`npx prisma db push`)
-- [ ] Database seeded with production data
-- [ ] All 6,078 companies uploaded
-- [ ] S3 files accessible via API proxy
-
-### 🧪 Testing
-- [ ] Local build successful (`npm run build`)
-- [ ] All API endpoints working
-- [ ] File uploads/downloads working
-- [ ] Search and filtering functional
-- [ ] Pagination working correctly
-- [ ] Mobile responsive design verified
-
-### 🚀 Deployment
-- [ ] Code committed to main branch
-- [ ] Vercel project connected
-- [ ] Domain configured (demo.customereye.ai)
-- [ ] SSL certificate active
-- [ ] Production deployment successful
-
-### 📊 Post-Deployment
-- [ ] Site loads correctly
-- [ ] All companies searchable
-- [ ] Reports display properly
-- [ [ ] S3 files loading
-- [ ] Performance acceptable
-- [ ] No console errors
 
 ---
 

@@ -11,46 +11,150 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(cuid())
-  name    String?
-  email   String?  @unique
-  reports Report[]
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  reports   Report[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+// Main report model
 model Report {
   id          String   @id @default(cuid())
   title       String
   description String?
   companyName String
+  companySlug String   // URL-friendly version of company name
   industry   String
+  country    String?  // Country where company operates
   rating     Float
   reviewCount Int
   summary    String
-  tags       String   // JSON string for simplicity
-  reportType String   // "Free" or "Premium"
-  language   String
+  tags       String[] // Array of tags
+  reportType ReportType @default(FREE)
+  language   String   @default("en")
   isPaid     Boolean  @default(false)
   logo       String?  // File path or emoji
-  reportData String?  // JSON string for detailed report data
+  status     ReportStatus @default(DRAFT)
+  
+  // S3 organization (simplified)
+  version     String   @default("v1")
+  s3Prefix    String   @default("") // e.g., "companies/aor-ca/free/v1"
+  metadata    Json?    // Additional structured data
+  
+  // Metadata
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  publishedAt DateTime?
+  
+  // Relations
   userId     String?
   user       User?    @relation(fields: [userId], references: [id])
-  files      FileStorage[] // Relation to file storage
+  dataFiles  ReportDataFile[]
+  sections   ReportSection[]
+  
+  @@unique([companySlug, reportType, country, version])
+  @@index([companySlug])
+  @@index([reportType])
+  @@index([industry])
+  @@index([country])
+  @@index([version])
 }
 
-// File storage model for reports and images
-model FileStorage {
-  id        String   @id @default(cuid())
-  filename  String
+// Report data files (text and image files)
+model ReportDataFile {
+  id          String   @id @default(cuid())
+  reportId    String
+  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  
+  // File identification
+  fileType    DataFileType // TEXT, IMAGE, PDF, JSON
+  sectionType SectionType // RATING_DISTRIBUTION, WORDCLOUD, etc.
+  sequence    Int?     // Order within section (1, 2, 3, etc.)
+  
+  // File details
+  filename    String
   originalName String
-  path      String
-  type      String   // "report", "image", "pdf"
-  size      Int
-  mimeType  String
-  createdAt DateTime @default(now())
-  reportId  String?
-  report    Report?  @relation(fields: [reportId], references: [id])
+  s3Key       String   @default("") // Full S3 key path
+  size        Int
+  mimeType    String
+  
+  // Content (for text files)
+  content     String?  // Text content for easy access
+  
+  // New S3 structure fields
+  version     String   @default("v1")
+  fileCategory String  @default("text") // "text", "images", "json", "pdf", etc.
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([reportId, sectionType])
+  @@index([fileType])
+  @@index([fileCategory])
+  @@index([version])
+}
+
+// Report sections for organized data
+model ReportSection {
+  id          String   @id @default(cuid())
+  reportId    String
+  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  
+  sectionType SectionType
+  title       String
+  content     String?  // Processed content/analysis
+  order       Int      // Display order
+  
+  // Section-specific data
+  metadata    Json?    // Additional structured data
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([reportId, order])
+  @@unique([reportId, sectionType])
+}
+
+// Enums
+enum ReportType {
+  FREE
+  PREMIUM
+}
+
+enum ReportStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DataFileType {
+  TEXT
+  IMAGE
+  PDF
+  JSON
+  CSV
+  EXCEL
+}
+
+enum SectionType {
+  RATING_DISTRIBUTION
+  SENTIMENT_DISTRIBUTION
+  RATING_VS_SENTIMENT
+  YEARLY_ANALYSIS
+  MONTHLY_ANALYSIS
+  OVERALL_WORDCLOUD
+  POSITIVE_WORDCLOUD
+  NEGATIVE_WORDCLOUD
+  OVERALL_COMMON_WORDS
+  POSITIVE_COMMON_WORDS
+  NEGATIVE_COMMON_WORDS
+  OVERALL_TEXT_COUNTS
+  POSITIVE_TEXT_COUNTS
+  NEGATIVE_TEXT_COUNTS
+  YEARLY_REPLIES
+  CONCLUSION
+  CUSTOM_ANALYSIS
 }

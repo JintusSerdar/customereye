@@ -1,37 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile, getFileInfo } from '@/lib/file-system';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION || 'us-west-1',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || 'customereye';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    const filePath = params.path.join('/');
+    const resolvedParams = await params;
+    const filePath = resolvedParams.path.join('/');
+    const s3Key = filePath;
     
-    // Security: Prevent directory traversal
-    if (filePath.includes('..') || filePath.startsWith('/')) {
-      return new NextResponse('Forbidden', { status: 403 });
-    }
+    console.log(`📁 Fetching file: ${s3Key}`);
     
-    // Get file info
-    const fileInfo = await getFileInfo(filePath);
-    if (!fileInfo) {
+    const command = new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: s3Key,
+    });
+    
+    const response = await s3Client.send(command);
+    
+    if (!response.Body) {
       return new NextResponse('File not found', { status: 404 });
     }
     
-    // Read file content
-    const fileBuffer = await readFile(filePath);
+    // Convert the stream to a buffer
+    const chunks = [];
+    for await (const chunk of response.Body as any) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
     
-    // Return file with appropriate headers
-    return new NextResponse(fileBuffer, {
-      headers: {
-        'Content-Type': fileInfo.mimeType,
-        'Content-Length': fileInfo.size.toString(),
-        'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
-      },
+    // Set appropriate headers
+    const headers = new Headers();
+    headers.set('Content-Type', response.ContentType || 'application/octet-stream');
+    headers.set('Content-Length', buffer.length.toString());
+    headers.set('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+    
+    return new NextResponse(buffer, {
+      status: 200,
+      headers,
     });
+    
   } catch (error) {
-    console.error('Error serving file:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    console.error('❌ Error fetching file:', error);
+    return new NextResponse('File not found', { status: 404 });
   }
 }

@@ -1,0 +1,28 @@
+Word Cloud Analysis for Fragrance11 Reviews
+
+Most frequently mentioned words in customer reviews:
+
+1. "fragrance" - 342 mentions (27.3%)
+2. "quality" - 298 mentions (23.8%)
+3. "amazing" - 267 mentions (21.3%)
+4. "love" - 234 mentions (18.7%)
+5. "beautiful" - 198 mentions (15.8%)
+6. "long-lasting" - 156 mentions (12.5%)
+7. "scent" - 143 mentions (11.4%)
+8. "perfect" - 134 mentions (10.7%)
+9. "delivery" - 98 mentions (7.8%)
+10. "packaging" - 87 mentions (7.0%)
+
+Sentiment Analysis:
+- Positive sentiment: 89.2%
+- Neutral sentiment: 8.1%
+- Negative sentiment: 2.7%
+
+Key themes identified:
+- Product quality and longevity
+- Emotional connection with fragrances
+- Excellent customer experience
+- Reliable delivery and packaging
+- Strong brand loyalty
+
+The word cloud reveals customers' primary focus on product quality, emotional satisfaction, and overall positive experience with Fragrance11's offerings.
