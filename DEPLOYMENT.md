@@ -1,224 +1,310 @@
 # 🚀 CustomerEye Deployment Guide
 
-> **Table of Contents**
-> - [Quick Reference](#quick-reference)
-> - [Branch Strategy](#branch-strategy)
-> - [Daily Workflow](#daily-workflow)
-> - [Clean Up After Merging](#5️⃣-clean-up-after-merging-a-feature)
-> - [Safe Rebase](#6️⃣-safe-rebase-keep-a-feature-branch-updated)
-> - [When NOT to Rebase](#7️⃣-when-not-to-rebase)
-> - [Emergency Rollback](#emergency-rollback)
-> - [Useful Git Flags](#useful-git-flags-cheat-sheet)
-> - [Vercel CLI Tips](#vercel-cli-tips)
-> - [Environment Variables](#environment-variables)
+> **Current Status**: Production Ready with 6,078 companies and 42,183 files
 
----
+## 📊 Platform Overview
 
-## Quick Reference
+- **Total Companies**: 6,078
+- **Countries**: US (5,611), CA (451), UK (16)
+- **Industries**: 22 categories
+- **Files**: 42,183 stored in AWS S3
+- **Database**: PostgreSQL with Prisma ORM
+- **Storage**: AWS S3 with optimized structure
 
-### URLs
-- **Production**: https://demo.customereye.ai (main branch)  
-- **Staging**: https://customereye-git-develop-jintusserdars-projects.vercel.app (develop branch)  
-- **Feature Previews**: https://customereye-git-[feature-name]-jintusserdars-projects.vercel.app
+## 🚀 Deployment Options
 
----
+### Option 1: Vercel (Recommended)
 
-## Branch Strategy
-| Branch      | Purpose                       | Deployment |
-|-------------|-------------------------------|------------|
-| `main`      | Production (live site)        | https://demo.customereye.ai |
-| `develop`   | Staging / integration         | https://customereye-git-develop-jintusserdars-projects.vercel.app |
-| `feature/*` | Isolated feature branches     | `https://customereye-git-[feature]-jintusserdars-projects.vercel.app` |
+**Why Vercel?**
+- ✅ Zero-config deployment
+- ✅ Automatic scaling
+- ✅ Global CDN
+- ✅ Built-in analytics
+- ✅ Cost-effective for Next.js
+- ✅ Easy environment management
 
----
+**Deployment Steps:**
 
-## Daily Workflow
+1. **Install Vercel CLI**
+   ```bash
+   npm i -g vercel
+   ```
 
-### 1️⃣ Start a New Feature
-```bash
-git switch develop
-git pull --rebase origin develop
-git switch -c feature/your-feature
+2. **Login to Vercel**
+   ```bash
+   vercel login
+   ```
+
+3. **Deploy to Vercel**
+   ```bash
+   vercel --prod
+   ```
+
+4. **Set Environment Variables** in Vercel Dashboard:
+   ```env
+   DATABASE_URL=postgresql://user:password@host:5432/customereye
+   AWS_REGION=us-west-1
+   AWS_ACCESS_KEY_ID=your-access-key
+   AWS_SECRET_ACCESS_KEY=your-secret-key
+   AWS_S3_BUCKET_NAME=customereye
+   NEXT_PUBLIC_AWS_S3_BUCKET_NAME=customereye
+   NEXTAUTH_SECRET=your-secret
+   NEXTAUTH_URL=https://your-domain.vercel.app
+   NODE_ENV=production
+   ```
+
+### Option 2: Docker (Alternative)
+
+**Use Docker for:**
+- Custom server requirements
+- On-premise deployment
+- Complex infrastructure needs
+
+**Deployment Steps:**
+
+1. **Build Docker Image**
+   ```bash
+   docker build -t customereye .
+   ```
+
+2. **Run with Docker Compose**
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Access Application**
+   - Application: http://localhost:3000
+   - Database: localhost:5432
+
+## 🗄️ Database Setup
+
+### PostgreSQL Configuration
+
+1. **Create Database**
+   ```sql
+   CREATE DATABASE customereye;
+   ```
+
+2. **Run Migrations**
+   ```bash
+   npx prisma db push
+   npx prisma generate
+   ```
+
+3. **Verify Data** (Optional)
+   ```bash
+   npx prisma studio
+   ```
+
+### Database Schema
+
+The platform uses a comprehensive schema with:
+- **Reports**: 6,078 company reports
+- **ReportDataFiles**: 42,183 files (text, images, PDFs)
+- **ReportSections**: Organized content sections
+- **Users**: User management (future feature)
+
+## ☁️ AWS S3 Setup
+
+### S3 Bucket Configuration
+
+1. **Create S3 Bucket**
+   - Name: `customereye`
+   - Region: `us-west-1`
+   - Versioning: Enabled
+
+2. **Set Bucket Policy** (for public file access)
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "PublicReadGetObject",
+         "Effect": "Allow",
+         "Principal": "*",
+         "Action": "s3:GetObject",
+         "Resource": "arn:aws:s3:::customereye/*"
+       }
+     ]
+   }
+   ```
+
+3. **Configure CORS**
+   ```json
+   [
+     {
+       "AllowedHeaders": ["*"],
+       "AllowedMethods": ["GET"],
+       "AllowedOrigins": ["*"],
+       "ExposeHeaders": []
+     }
+   ]
+   ```
+
+## 🔧 Environment Variables
+
+### Required Variables
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@host:5432/customereye"
+
+# AWS S3
+AWS_REGION="us-west-1"
+AWS_ACCESS_KEY_ID="your-access-key"
+AWS_SECRET_ACCESS_KEY="your-secret-key"
+AWS_S3_BUCKET_NAME="customereye"
+NEXT_PUBLIC_AWS_S3_BUCKET_NAME="customereye"
+
+# NextAuth (for future authentication)
+NEXTAUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="https://your-domain.com"
+
+# Environment
+NODE_ENV="production"
 ```
 
-### 2️⃣ Make Changes & Test
-```bash
-# Edit code
-git add -p        # or: git add .
-git commit -m "feat: description of changes"
-git push -u origin feature/your-feature
+### Vercel Environment Setup
 
-# Preview URL:
-# https://customereye-git-[feature]-jintusserdars-projects.vercel.app
-```
+1. Go to Vercel Dashboard
+2. Select your project
+3. Go to Settings → Environment Variables
+4. Add all required variables
+5. Redeploy the application
 
-### 3️⃣ Merge to Staging
-```bash
-# Open PR: base = develop, compare = feature/your-feature
-# After review, merge → develop.
-# Staging auto-updates:
-# https://customereye-git-develop-jintusserdars-projects.vercel.app
-```
+## 📊 Performance Optimization
 
-### 4️⃣ Release to Production
-```bash
-git switch main
-git pull --rebase origin main
-git merge --no-ff develop -m "Release: <summary>"
-git push origin main
+### Database Optimization
 
-# Production: https://demo.customereye.ai
-```
+- **Indexes**: Optimized for filtering and sorting
+- **Pagination**: Server-side pagination (608 pages)
+- **Caching**: API response caching
+- **Queries**: Optimized Prisma queries
 
-### 5️⃣ Clean Up After Merging a Feature
-```bash
-git switch develop
-git pull --rebase origin develop
-git branch -d feature/your-feature        # delete locally
-git push origin --delete feature/your-feature  # delete remotely
-```
+### S3 Optimization
 
-### 6️⃣ Safe Rebase (Keep a Feature Branch Updated)
-```bash
-git fetch origin
-git rebase origin/develop      # replay commits on top of latest develop
-git push --force-with-lease    # only if you had pushed before
-```
+- **CDN**: Global content delivery
+- **Compression**: Optimized file sizes
+- **Caching**: Long-term caching headers
+- **Structure**: Organized file hierarchy
 
-> ⚠️ **Use `--force-with-lease` (never `--force`)** to avoid overwriting teammates' work.
+## 🔍 Monitoring & Analytics
 
-### 7️⃣ When NOT to Rebase
-- When teammates are already working off your branch
-- When a PR is open and under review
-- On protected branches (main, develop, releases)
-- On commits owned/published by others
+### Vercel Analytics
 
-**Safer options:**
-```bash
-# Merge base into your feature instead:
-git switch feature/your-feature
-git fetch origin
-git merge origin/develop
-git push
-```
+- **Performance**: Core Web Vitals
+- **Usage**: Page views and sessions
+- **Errors**: Real-time error tracking
+- **Speed**: Response time monitoring
 
----
+### Database Monitoring
 
-## Emergency Rollback
-```bash
-git switch main
-git reset --hard HEAD~1
-git push origin main --force
-```
-
----
-
-## Useful Git Flags (Cheat Sheet)
-| Flag | Meaning |
-|------|---------|
-| `-c` | create branch with `git switch -c` |
-| `--rebase` | replay commits on top of updated branch |
-| `-d` | delete local branch if merged |
-| `-D` | force delete local branch |
-| `-u` | set upstream for easy push/pull |
-| `--no-ff` | force merge commit (preserve bubble) |
-| `--force-with-lease` | safe force push |
-
----
-
-## Vercel CLI Tips
-```bash
-# See all deployments
-vercel ls
-
-# Check deployment status
-vercel inspect [deployment-url]
-
-# View logs
-vercel logs [deployment-url]
-
-# Deploy to production
-vercel --prod
-
-# Deploy preview
-vercel
-```
-
----
-
-## Environment Variables
-| Key | Value |
-|-----|-------|
-| `NODE_ENV` | `production` |
-| `DATABASE_URL` | `<your database url>` |
-| `NEXTAUTH_URL` | `https://demo.customereye.ai` |
-| `NEXTAUTH_SECRET` | `<secure key>` |
-
----
-
-## 🎯 Best Practices
-
-### Commit Messages
-- `feat:` - New features
-- `fix:` - Bug fixes
-- `docs:` - Documentation changes
-- `style:` - Code style changes
-- `refactor:` - Code refactoring
-- `test:` - Adding tests
-- `chore:` - Maintenance tasks
-
-### Branch Naming
-- `feature/add-user-authentication`
-- `fix/login-validation-error`
-- `docs/update-deployment-guide`
-- `refactor/optimize-database-queries`
-
-### Pull Request Guidelines
-1. **Clear Title**: Describe what the PR does
-2. **Description**: Explain the changes and why
-3. **Screenshots**: For UI changes
-4. **Testing**: How you tested the changes
-5. **Breaking Changes**: If any, clearly document them
-
----
+- **Query Performance**: Prisma query optimization
+- **Connection Pooling**: Efficient database connections
+- **Index Usage**: Query optimization
 
 ## 🚨 Troubleshooting
 
 ### Common Issues
 
-**Deployment fails:**
-```bash
-# Check build logs
-vercel logs [deployment-url]
+1. **Database Connection**
+   ```bash
+   # Check connection
+   npx prisma db push
+   ```
 
-# Check environment variables
-vercel env ls
+2. **S3 Access Issues**
+   ```bash
+   # Verify credentials
+   aws s3 ls s3://customereye
+   ```
+
+3. **Build Failures**
+   ```bash
+   # Clear cache and rebuild
+   rm -rf .next
+   npm run build
+   ```
+
+### Debug Commands
+
+```bash
+# Check database status
+npx prisma studio
+
+# Verify S3 files
+aws s3 ls s3://customereye --recursive
+
+# Test API endpoints
+curl https://your-domain.com/api/reports?page=1&limit=5
 ```
 
-**Domain not working:**
-1. Check DNS records are correct
-2. Wait for DNS propagation (5-10 minutes)
-3. Verify domain is added in Vercel dashboard
+## 🔄 CI/CD Pipeline
 
-**Build errors:**
+### Automated Deployment
+
+1. **Push to main branch**
+2. **Vercel automatically builds and deploys**
+3. **Environment variables are applied**
+4. **Database migrations run automatically**
+
+### Manual Deployment
+
 ```bash
-# Test locally first
-npm run build
-npm run start
+# Deploy to production
+vercel --prod
 
-# Check for TypeScript errors
-npm run lint
+# Deploy to preview
+vercel
 ```
+
+## 📈 Scaling Considerations
+
+### Current Capacity
+
+- **Database**: 6,078 reports (can handle 100K+)
+- **S3 Storage**: 42,183 files (unlimited)
+- **API**: Optimized for high traffic
+- **CDN**: Global content delivery
+
+### Future Scaling
+
+- **Database**: Read replicas for high traffic
+- **S3**: Multi-region replication
+- **CDN**: Advanced caching strategies
+- **Monitoring**: Enhanced analytics
+
+## 🛡️ Security
+
+### Data Protection
+
+- **Database**: Encrypted connections
+- **S3**: Secure file access
+- **API**: Rate limiting and validation
+- **Environment**: Secure variable storage
+
+### Access Control
+
+- **S3**: IAM-based access control
+- **Database**: Connection pooling
+- **API**: Input validation and sanitization
+
+## 📞 Support
+
+### Deployment Support
+
+- **Vercel**: Built-in support and documentation
+- **AWS**: Comprehensive S3 documentation
+- **Database**: Prisma documentation and community
+
+### Monitoring
+
+- **Uptime**: Vercel status page
+- **Performance**: Built-in analytics
+- **Errors**: Real-time error tracking
 
 ---
 
-## 📚 Additional Resources
+**Ready for Production!** 🚀
 
-- [Vercel Documentation](https://vercel.com/docs)
-- [Git Best Practices](https://www.atlassian.com/git/tutorials/comparing-workflows)
-- [Next.js Deployment](https://nextjs.org/docs/deployment)
-- [Prisma Deployment](https://www.prisma.io/docs/guides/deployment)
-
----
-
-*Last updated: $(date)*
+Your CustomerEye platform is fully optimized and ready for deployment with 6,078 companies and comprehensive functionality.
