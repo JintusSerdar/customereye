@@ -1,10 +1,15 @@
-// Reports page for CustomerEye
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, Filter, Grid, List } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { Search, Filter, Grid, List, Star, Users, Building2, Globe, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -12,402 +17,306 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ReportCard from "@/components/ReportCard";
-import ReportFilters from "@/components/ReportFilters";
-import { FrontendReport, Filters } from "@/types";
 
-const mockReports: FrontendReport[] = [
-  {
-    id: 1,
-    company: "Advance America",
-    industry: "Money & Insurance",
-    rating: 4.8,
-    reviewCount: 15420,
-    summary:
-      "Advance America excels in customer service with 93.39% 5-star ratings. Customers praise helpful staff, easy processes, and fast service. Key strengths include friendly interactions and consistent reliability. The company shows significant improvement in customer engagement since 2023.",
-    tags: [
-      "Payday Loans",
-      "Financial Services",
-      "Customer Service",
-      "Quick Loans",
-      "Reliable",
-    ],
-    reportType: "Premium",
-    language: "English",
-    date: "2024-01-15",
-    isPaid: true,
-    logo: "🏦",
-  },
-  {
-    id: 2,
-    company: "LocalBite Restaurant",
-    industry: "Restaurants & Bars",
-    rating: 4.1,
-    reviewCount: 287,
-    summary:
-      "LocalBite Restaurant delivers quality dining experiences with farm-to-table focus. Customers appreciate fresh ingredients and friendly service, while some note limited menu options.",
-    tags: ["Restaurant", "Farm-to-Table", "Local"],
-    reportType: "Free",
-    language: "English",
-    date: "2024-01-12",
-    isPaid: false,
-    logo: "🍽️",
-  },
-  {
-    id: 3,
-    company: "TechFlow Software",
-    industry: "Electronics & Technology",
-    rating: 3.9,
-    reviewCount: 156,
-    summary:
-      "TechFlow Software provides solid business solutions with good customer support. Users value the intuitive interface, though some request more advanced features and faster updates.",
-    tags: ["Software", "Business", "SaaS"],
-    reportType: "Premium",
-    language: "English",
-    date: "2024-01-10",
-    isPaid: true,
-    logo: "💻",
-  },
-  {
-    id: 4,
-    company: "Wellness First Clinic",
-    industry: "Health & Medical",
-    rating: 4.2,
-    reviewCount: 198,
-    summary:
-      "Wellness First Clinic offers personalized healthcare with caring staff. Patients appreciate the attention to detail and comprehensive care, though wait times can be lengthy.",
-    tags: ["Healthcare", "Wellness", "Clinic"],
-    reportType: "Free",
-    language: "English",
-    date: "2024-01-08",
-    isPaid: false,
-    logo: "🏥",
-  },
-  {
-    id: 5,
-    company: "CraftWorks Furniture",
-    industry: "Shopping & Fashion",
-    rating: 4.0,
-    reviewCount: 124,
-    summary:
-      "CraftWorks Furniture delivers quality handcrafted pieces with excellent craftsmanship. Customers love the unique designs and durability, while some mention longer delivery times.",
-    tags: ["Furniture", "Handcrafted", "Retail"],
-    reportType: "Premium",
-    language: "English",
-    date: "2024-01-05",
-    isPaid: true,
-    logo: "🪑",
-  },
-  {
-    id: 6,
-    company: "BrightStart Education",
-    industry: "Education & Training",
-    rating: 4.4,
-    reviewCount: 89,
-    summary:
-      "BrightStart Education provides innovative learning programs with dedicated teachers. Parents appreciate the personalized approach and progress tracking, though class sizes are growing.",
-    tags: ["Education", "Learning", "Children"],
-    reportType: "Free",
-    language: "English",
-    date: "2024-01-03",
-    isPaid: false,
-    logo: "📚",
-  },
-  {
-    id: 7,
-    company: "EcoClean Services",
-    industry: "Business Services",
-    rating: 3.8,
-    reviewCount: 203,
-    summary:
-      "EcoClean Services offers reliable cleaning with eco-friendly products. Clients value the thorough work and environmental commitment, though some note occasional scheduling issues.",
-    tags: ["Cleaning", "Eco-Friendly", "Services"],
-    reportType: "Premium",
-    language: "English",
-    date: "2024-01-01",
-    isPaid: true,
-    logo: "🧹",
-  },
-  {
-    id: 8,
-    company: "FitLife Gym",
-    industry: "Sports",
-    rating: 4.1,
-    reviewCount: 167,
-    summary:
-      "FitLife Gym provides excellent fitness facilities with knowledgeable trainers. Members appreciate the variety of classes and equipment, while some mention peak hour crowding.",
-    tags: ["Fitness", "Gym", "Wellness"],
-    reportType: "Free",
-    language: "English",
-    date: "2023-12-28",
-    isPaid: false,
-    logo: "💪",
-  },
-  {
-    id: 9,
-    company: "Pawsome Pet Care",
-    industry: "Animals & Pets",
-    rating: 4.5,
-    reviewCount: 134,
-    summary:
-      "Pawsome Pet Care provides exceptional pet grooming and boarding services. Pet owners appreciate the gentle care and attention to detail, though some mention booking difficulties during peak seasons.",
-    tags: ["Pet Care", "Grooming", "Boarding"],
-    reportType: "Premium",
-    language: "English",
-    date: "2023-12-25",
-    isPaid: true,
-    logo: "🐾",
-  },
-  {
-    id: 10,
-    company: "Beauty Haven Spa",
-    industry: "Beauty & Well-being",
-    rating: 4.2,
-    reviewCount: 189,
-    summary:
-      "Beauty Haven Spa offers luxurious spa treatments and beauty services. Clients love the relaxing atmosphere and skilled therapists, though some note premium pricing for services.",
-    tags: ["Spa", "Beauty", "Wellness"],
-    reportType: "Free",
-    language: "English",
-    date: "2023-12-22",
-    isPaid: false,
-    logo: "💆‍♀️",
-  },
-  {
-    id: 11,
-    company: "BuildRight Construction",
-    industry: "Construction",
-    rating: 4.0,
-    reviewCount: 156,
-    summary:
-      "BuildRight Construction delivers quality home renovations and construction projects. Clients appreciate the craftsmanship and reliability, though some mention project timeline delays.",
-    tags: ["Construction", "Renovation", "Home Improvement"],
-    reportType: "Premium",
-    language: "English",
-    date: "2023-12-20",
-    isPaid: true,
-    logo: "🏗️",
-  },
-  {
-    id: 12,
-    company: "Creative Corner Studio",
-    industry: "Hobbies & Crafts",
-    rating: 4.3,
-    reviewCount: 98,
-    summary:
-      "Creative Corner Studio offers art classes and craft workshops for all ages. Students love the creative environment and skilled instructors, though some mention limited class availability.",
-    tags: ["Art", "Crafts", "Workshops"],
-    reportType: "Free",
-    language: "English",
-    date: "2023-12-18",
-    isPaid: false,
-    logo: "🎨",
-  },
-  {
-    id: 13,
-    company: "Garden Oasis Landscaping",
-    industry: "Home & Garden",
-    rating: 4.1,
-    reviewCount: 145,
-    summary:
-      "Garden Oasis Landscaping creates beautiful outdoor spaces and garden designs. Clients appreciate the attention to detail and seasonal maintenance, though some mention weather-dependent scheduling.",
-    tags: ["Landscaping", "Garden Design", "Outdoor"],
-    reportType: "Premium",
-    language: "English",
-    date: "2023-12-15",
-    isPaid: true,
-    logo: "🌿",
-  },
-  {
-    id: 14,
-    company: "Legal Shield Partners",
-    industry: "Legal Services",
-    rating: 3.9,
-    reviewCount: 112,
-    summary:
-      "Legal Shield Partners provides accessible legal services for small businesses and individuals. Clients value the affordable rates and clear communication, though some mention limited practice areas.",
-    tags: ["Legal", "Business Law", "Consultation"],
-    reportType: "Free",
-    language: "English",
-    date: "2023-12-12",
-    isPaid: false,
-    logo: "⚖️",
-  },
-  {
-    id: 15,
-    company: "Local News Network",
-    industry: "Media & Publishing",
-    rating: 4.0,
-    reviewCount: 178,
-    summary:
-      "Local News Network delivers community-focused journalism and local news coverage. Readers appreciate the in-depth local reporting, though some mention limited digital content.",
-    tags: ["News", "Local Media", "Journalism"],
-    reportType: "Premium",
-    language: "English",
-    date: "2023-12-10",
-    isPaid: true,
-    logo: "📰",
-  },
-  {
-    id: 16,
-    company: "Community Credit Union",
-    industry: "Money & Insurance",
-    rating: 4.2,
-    reviewCount: 234,
-    summary:
-      "Community Credit Union offers personalized banking services with competitive rates. Members appreciate the local focus and friendly service, though some mention limited branch hours.",
-    tags: ["Banking", "Credit Union", "Financial Services"],
-    reportType: "Free",
-    language: "English",
-    date: "2023-12-08",
-    isPaid: false,
-    logo: "🏦",
-  },
-  {
-    id: 17,
-    company: "City Services Plus",
-    industry: "Public & Local Services",
-    rating: 3.8,
-    reviewCount: 167,
-    summary:
-      "City Services Plus provides essential local government services and community programs. Residents appreciate the accessibility and helpful staff, though some mention processing delays.",
-    tags: ["Local Government", "Community Services", "Public"],
-    reportType: "Premium",
-    language: "English",
-    date: "2023-12-05",
-    isPaid: true,
-    logo: "🏛️",
-  },
-  {
-    id: 18,
-    company: "Power Solutions Co",
-    industry: "Utilities",
-    rating: 4.1,
-    reviewCount: 189,
-    summary:
-      "Power Solutions Co provides reliable energy services and utility management. Customers appreciate the responsive customer service and energy efficiency programs, though some mention billing complexity.",
-    tags: ["Energy", "Utilities", "Efficiency"],
-    reportType: "Free",
-    language: "English",
-    date: "2023-12-03",
-    isPaid: false,
-    logo: "⚡",
-  },
-  {
-    id: 19,
-    company: "Reliable Transport",
-    industry: "Vehicles & Transportation",
-    rating: 4.0,
-    reviewCount: 145,
-    summary:
-      "Reliable Transport offers dependable delivery and transportation services. Clients value the on-time delivery and professional drivers, though some mention peak season pricing.",
-    tags: ["Transportation", "Delivery", "Logistics"],
-    reportType: "Premium",
-    language: "English",
-    date: "2023-12-01",
-    isPaid: true,
-    logo: "🚚",
-  },
-  {
-    id: 20,
-    company: "Event Masters",
-    industry: "Events & Entertainment",
-    rating: 4.3,
-    reviewCount: 123,
-    summary:
-      "Event Masters creates memorable events and entertainment experiences. Clients love the creativity and attention to detail, though some mention advance booking requirements.",
-    tags: ["Events", "Entertainment", "Planning"],
-    reportType: "Free",
-    language: "English",
-    date: "2023-11-28",
-    isPaid: false,
-    logo: "🎉",
-  },
+interface Report {
+  id: string;
+  company: string;
+  companySlug: string;
+  industry: string;
+  category?: string;
+  country: string;
+  rating: number;
+  reviewCount: number;
+  summary: string;
+  tags: string[];
+  reportType: 'FREE' | 'PREMIUM';
+  language: string;
+  isPaid: boolean;
+  logo: string;
+  date: string;
+  dataFilesCount: number;
+  sectionsCount: number;
+}
+
+interface Filters {
+  industry: string;
+  rating: string;
+  country: string;
+  isPaid: string;
+}
+
+interface ReportsResponse {
+  reports: Report[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+interface ReportFiltersProps {
+  filters: Filters;
+  onFiltersChange: (filters: Filters) => void;
+}
+
+const categories = [
+  "Animals & Pets",
+  "Beauty & Wellbeing",
+  "Business Services",
+  "Construction",
+  "Education & Training",
+  "Electronics & Technology",
+  "Events & Entertainment",
+  "Food & Beverages",
+  "Health & Medical",
+  "Hobbies & Crafts",
+  "Home & Garden",
+  "Legal Services",
+  "Media & Publishing",
+  "Money & Insurance",
+  "Other",
+  "Public & Local Services",
+  "Restaurants & Bars",
+  "Shopping & Fashion",
+  "Sports",
+  "Travel & Vacation",
+  "Utilities",
+  "Vehicles & Transportation"
 ];
 
-const ReportsPage = () => {
+const ReportFilters = ({ filters, onFiltersChange }: ReportFiltersProps) => {
+  const updateFilter = (key: keyof Filters, value: string) => {
+    onFiltersChange({ ...filters, [key]: value });
+  };
+
+  return (
+    <Card className="sticky top-24">
+      <CardHeader>
+        <CardTitle className="text-lg">Filters</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Industry Filter */}
+        <div>
+          <Label className="text-sm font-semibold mb-3 block">Category</Label>
+          <RadioGroup
+            value={filters.industry}
+            onValueChange={(value) => updateFilter("industry", value)}
+            className="space-y-2"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="all" id="industry-all" />
+              <Label htmlFor="industry-all" className="text-sm">
+                All Categories
+              </Label>
+            </div>
+            {categories.map((cat) => (
+              <div className="flex items-center space-x-2" key={cat}>
+                <RadioGroupItem
+                  value={cat}
+                  id={`industry-${cat.replace(/\s+/g, "-")}`}
+                />
+                <Label
+                  htmlFor={`industry-${cat.replace(/\s+/g, "-")}`}
+                  className="text-sm"
+                >
+                  {cat}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </div>
+        <Separator />
+        {/* Rating Filter */}
+        <div>
+          <Label className="text-sm font-semibold mb-3 block">Rating</Label>
+          <RadioGroup
+            value={filters.rating}
+            onValueChange={(value) => updateFilter("rating", value)}
+            className="space-y-2"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="all" id="rating-all" />
+              <Label htmlFor="rating-all" className="text-sm">
+                All Ratings
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="4+" id="rating-4plus" />
+              <Label htmlFor="rating-4plus" className="text-sm">
+                4+ Stars
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="3+" id="rating-3plus" />
+              <Label htmlFor="rating-3plus" className="text-sm">
+                3+ Stars
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+        <Separator />
+        {/* Country Filter */}
+        <div>
+          <Label className="text-sm font-semibold mb-3 block">Country</Label>
+          <RadioGroup
+            value={filters.country}
+            onValueChange={(value) => updateFilter("country", value)}
+            className="space-y-2"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="all" id="country-all" />
+              <Label htmlFor="country-all" className="text-sm">
+                All Countries
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="US" id="country-us" />
+              <Label htmlFor="country-us" className="text-sm">
+                United States
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="CA" id="country-ca" />
+              <Label htmlFor="country-ca" className="text-sm">
+                Canada
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="UK" id="country-uk" />
+              <Label htmlFor="country-uk" className="text-sm">
+                United Kingdom
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+        <Separator />
+        {/* Payment Filter */}
+        <div>
+          <Label className="text-sm font-semibold mb-3 block">Access</Label>
+          <RadioGroup
+            value={filters.isPaid}
+            onValueChange={(value) => updateFilter("isPaid", value)}
+            className="space-y-2"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="all" id="paid-all" />
+              <Label htmlFor="paid-all" className="text-sm">
+                All Reports
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="free" id="paid-free" />
+              <Label htmlFor="paid-free" className="text-sm">
+                Free Only
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="paid" id="paid-paid" />
+              <Label htmlFor="paid-paid" className="text-sm">
+                Premium Only
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default function ReportsPage() {
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("most-recent");
+  const [sortBy, setSortBy] = useState("a-z");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<Filters>({
     industry: "all",
     rating: "all",
-    reportType: "all",
-    language: "all",
+    country: "all",
     isPaid: "all",
   });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  });
 
-  const itemsPerPage = 9; // Show 9 items per page (3x3 grid)
+  // Fetch reports
+  const fetchReports = useCallback(async (page = 1) => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: pagination.limit.toString(),
+      });
 
-  // Filter and sort reports
-  const filteredReports = mockReports
-    .filter((report) => {
-      const matchesSearch =
-        report.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.tags.some((tag) =>
-          tag.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      const matchesIndustry =
-        filters.industry === "all" || report.industry === filters.industry;
-      const matchesRating =
-        filters.rating === "all" ||
-        (filters.rating === "4+" && report.rating >= 4) ||
-        (filters.rating === "3+" && report.rating >= 3);
-      const matchesType =
-        filters.reportType === "all" ||
-        report.reportType === filters.reportType;
-      const matchesPaid =
-        filters.isPaid === "all" ||
-        (filters.isPaid === "free" && !report.isPaid) ||
-        (filters.isPaid === "paid" && report.isPaid);
-      const matchesLanguage =
-        filters.language === "all" || report.language === filters.language;
-      return (
-        matchesSearch &&
-        matchesIndustry &&
-        matchesRating &&
-        matchesType &&
-        matchesPaid &&
-        matchesLanguage
-      );
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "a-z":
-          return a.company.localeCompare(b.company);
-        case "z-a":
-          return b.company.localeCompare(a.company);
-        case "most-popular":
-          return b.reviewCount - a.reviewCount;
-        case "highest-rated":
-          return b.rating - a.rating;
-        default:
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
+      if (searchTerm) params.append('search', searchTerm);
+      if (filters.industry !== 'all') params.append('industry', filters.industry);
+      if (filters.country !== 'all') params.append('country', filters.country);
+      if (filters.rating !== 'all') params.append('rating', filters.rating);
+      if (filters.isPaid !== 'all') params.append('isPaid', filters.isPaid);
+
+      // Add sorting parameters
+      let actualSortBy = 'companyName'; // Default to company name
+      let actualSortOrder = 'asc'; // Default to ascending
+
+      if (sortBy === 'most-recent') {
+        actualSortBy = 'publishedAt';
+        actualSortOrder = 'desc';
+      } else if (sortBy === 'most-popular') {
+        actualSortBy = 'reviewCount';
+        actualSortOrder = 'desc';
+      } else if (sortBy === 'highest-rated') {
+        actualSortBy = 'rating';
+        actualSortOrder = 'desc';
+      } else if (sortBy === 'a-z') {
+        actualSortBy = 'companyName';
+        actualSortOrder = 'asc';
+      } else if (sortBy === 'z-a') {
+        actualSortBy = 'companyName';
+        actualSortOrder = 'desc';
       }
-    });
+      
+      params.append('sortBy', actualSortBy);
+      params.append('sortOrder', actualSortOrder);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentReports = filteredReports.slice(startIndex, endIndex);
+      // Add cache busting parameter
+      params.append('_t', Date.now().toString());
+      
+      const response = await fetch(`/api/reports?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch reports');
+      }
+      
+      const data: ReportsResponse = await response.json();
+      setReports(data.reports);
+      setPagination(data.pagination);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load reports');
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, filters, pagination.limit, sortBy]);
 
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, sortBy, filters]);
+  // Use server-side pagination - no client-side filtering needed
+  const currentReports = reports;
+  const currentPage = pagination.page;
+  const totalPages = pagination.totalPages;
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    fetchReports(page);
   };
 
   const getPageNumbers = () => {
     const pages = [];
-    const maxVisiblePages = 5;
+    const maxVisible = 5;
 
-    if (totalPages <= maxVisiblePages) {
+    if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
@@ -416,27 +325,54 @@ const ReportsPage = () => {
         for (let i = 1; i <= 4; i++) {
           pages.push(i);
         }
-        pages.push("...");
+        pages.push('...');
         pages.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
         pages.push(1);
-        pages.push("...");
+        pages.push('...');
         for (let i = totalPages - 3; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
         pages.push(1);
-        pages.push("...");
+        pages.push('...');
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pages.push(i);
         }
-        pages.push("...");
+        pages.push('...');
         pages.push(totalPages);
       }
     }
 
     return pages;
   };
+
+  useEffect(() => {
+    fetchReports(1);
+  }, [fetchReports]);
+
+  if (loading && reports.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading reports...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-primary mb-4">Error Loading Reports</h1>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <Button onClick={() => fetchReports(1)}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -498,7 +434,7 @@ const ReportsPage = () => {
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground">
-                {filteredReports.length} reports found
+                {pagination.total} reports found
               </span>
               <div className="flex items-center gap-1 border rounded-lg p-1">
                 <Button
@@ -531,7 +467,7 @@ const ReportsPage = () => {
           )}
           {/* Reports grid/list */}
           <div className="flex-1">
-            {filteredReports.length === 0 ? (
+            {currentReports.length === 0 ? (
               <div className="text-center py-16">
                 <h3 className="text-2xl font-semibold text-muted-foreground mb-4">
                   No reports found
@@ -549,15 +485,77 @@ const ReportsPage = () => {
                 }
               >
                 {currentReports.map((report) => (
-                  <ReportCard
-                    key={report.id}
-                    report={report}
-                    viewMode={viewMode}
-                  />
+                  <Card key={report.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="text-2xl">{report.logo}</div>
+                          <div>
+                            <CardTitle className="text-lg">{report.company}</CardTitle>
+                            <p className="text-sm text-muted-foreground">{report.industry}</p>
+                          </div>
+                        </div>
+                        <Badge variant={report.reportType === 'FREE' ? 'secondary' : 'default'}>
+                          {report.reportType}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <span>{report.rating || 'N/A'}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Users className="h-4 w-4" />
+                            <span>{report.reviewCount?.toLocaleString() || 'N/A'} reviews</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Globe className="h-4 w-4" />
+                            <span>{report.country}</span>
+                          </div>
+                        </div>
+                        
+                        <p className="text-sm text-muted-foreground line-clamp-3">
+                          {report.summary}
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-1">
+                          {report.tags.slice(0, 3).map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {report.tags.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{report.tags.length - 3} more
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>{new Date(report.date).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Building2 className="h-3 w-3" />
+                              <span>{report.dataFilesCount} files</span>
+                            </div>
+                          </div>
+                          <Link href={`/reports/${report.companySlug}`}>
+                            <Button size="sm">View Report</Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             )}
-            {/* Pagination placeholder */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center mt-12">
                 <div className="flex items-center gap-2">
@@ -569,17 +567,13 @@ const ReportsPage = () => {
                     Previous
                   </Button>
                   {getPageNumbers().map((page, index) => (
-                    <>
+                    <div key={`page-${index}-${page}`}>
                       {page === "..." ? (
-                        <span
-                          key={`ellipsis-${index}`}
-                          className="text-muted-foreground"
-                        >
+                        <span className="text-muted-foreground">
                           ...
                         </span>
                       ) : (
                         <Button
-                          key={page}
                           variant={page === currentPage ? "default" : "outline"}
                           onClick={() => handlePageChange(page as number)}
                           className="w-10 h-10 flex items-center justify-center"
@@ -587,7 +581,7 @@ const ReportsPage = () => {
                           {page}
                         </Button>
                       )}
-                    </>
+                    </div>
                   ))}
                   <Button
                     variant="outline"
@@ -604,6 +598,4 @@ const ReportsPage = () => {
       </div>
     </div>
   );
-};
-
-export default ReportsPage;
+}

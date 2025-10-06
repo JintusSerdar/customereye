@@ -1,0 +1,18 @@
+Rating Distribution Analysis for Fragrance11
+
+The rating distribution shows the following breakdown:
+- 5 stars: 78.5% (982 reviews)
+- 4 stars: 15.2% (190 reviews)  
+- 3 stars: 4.1% (51 reviews)
+- 2 stars: 1.5% (19 reviews)
+- 1 star: 0.7% (9 reviews)
+
+Total reviews analyzed: 1,251
+
+Key insights:
+- Overwhelmingly positive sentiment with 78.5% 5-star ratings
+- Strong customer satisfaction in the beauty/fragrance category
+- Minimal negative feedback (only 2.2% combined 1-2 star ratings)
+- Consistent quality delivery across customer base
+
+This distribution indicates excellent product quality and customer service standards maintained by Fragrance11.
