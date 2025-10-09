@@ -4,8 +4,8 @@
 
 ## 🚀 Live Demo
 
-- **Production**: https://demo.customereye.ai
-- **Staging**: https://customereye-git-develop-jintusserdars-projects.vercel.app
+- **Production**: https://demo.customereye.ai (main branch)
+- **Development**: https://customereye-git-dev-jintusserdars-projects.vercel.app (dev branch)
 
 ## 📊 Current Status
 
