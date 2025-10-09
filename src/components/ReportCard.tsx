@@ -87,16 +87,12 @@ const ReportCard = ({ report, viewMode }: ReportCardProps) => {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex flex-wrap gap-2">
-                  {report.tags.slice(0, 3).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {report.tags.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{report.tags.length - 3} more
-                    </Badge>
-                  )}
+                  <Badge variant="outline" className="text-xs">
+                    {report.industry}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {report.country}
+                  </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm">
@@ -152,16 +148,12 @@ const ReportCard = ({ report, viewMode }: ReportCardProps) => {
               {report.summary}
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
-              {report.tags.slice(0, 2).map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-              {report.tags.length > 2 && (
-                <Badge variant="outline" className="text-xs">
-                  +{report.tags.length - 2}
-                </Badge>
-              )}
+              <Badge variant="outline" className="text-xs">
+                {report.industry}
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                {report.country}
+              </Badge>
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Calendar className="h-3 w-3" />

@@ -13,7 +13,7 @@ interface ReportData {
   rating: number;
   reviewCount: number;
   summary: string;
-  tags: string[];
+  // tags field removed - using industry and country instead
   reportType: 'FREE' | 'PREMIUM';
   language: string;
   isPaid: boolean;

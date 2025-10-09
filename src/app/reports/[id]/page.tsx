@@ -42,7 +42,7 @@ interface ReportData {
   rating: number;
   reviewCount: number;
   summary: string;
-  tags: string[];
+  // tags field removed - using industry and country instead
   reportType: 'FREE' | 'PREMIUM';
   language: string;
   isPaid: boolean;
@@ -308,12 +308,14 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {reportData.tags.map((tag, index) => (
-              <Badge key={index} variant="secondary">
-                <Tag size={12} className="mr-1" />
-                {tag}
-              </Badge>
-            ))}
+            <Badge variant="secondary">
+              <Tag size={12} className="mr-1" />
+              {reportData.industry}
+            </Badge>
+            <Badge variant="secondary">
+              <Tag size={12} className="mr-1" />
+              {reportData.country}
+            </Badge>
           </div>
         </div>
 
