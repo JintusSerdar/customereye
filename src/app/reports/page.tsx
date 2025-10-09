@@ -60,32 +60,54 @@ interface ReportFiltersProps {
   onFiltersChange: (filters: Filters) => void;
 }
 
-const categories = [
-  "Animals & Pets",
-  "Beauty & Wellbeing",
-  "Business Services",
-  "Construction",
-  "Education & Training",
-  "Electronics & Technology",
-  "Events & Entertainment",
-  "Food & Beverages",
-  "Health & Medical",
-  "Hobbies & Crafts",
-  "Home & Garden",
-  "Legal & Government",
-  "Media & Publishing",
-  "Money & Insurance",
-  "Other",
-  "Public Services",
-  "Restaurants & Bars",
-  "Shopping & Fashion",
-  "Sports",
-  "Travel & Vacation",
-  "Utilities",
-  "Vehicles & Transportation"
-];
+// Categories will be fetched dynamically from the database
 
 const ReportFilters = ({ filters, onFiltersChange }: ReportFiltersProps) => {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/industries');
+        const data = await response.json();
+        setCategories(data.industries || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        // Fallback to hardcoded categories if API fails
+        setCategories([
+          "Animals & Pets",
+          "Beauty & Wellbeing", 
+          "Business Services",
+          "Construction",
+          "Education & Training",
+          "Electronics & Technology",
+          "Events & Entertainment",
+          "Food & Beverages",
+          "Health & Medical",
+          "Hobbies & Crafts",
+          "Home & Garden",
+          "Legal & Government",
+          "Media & Publishing",
+          "Money & Insurance",
+          "Other",
+          "Public Services",
+          "Restaurants & Bars",
+          "Shopping & Fashion",
+          "Sports",
+          "Travel & Vacation",
+          "Utilities",
+          "Vehicles & Transportation"
+        ]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const updateFilter = (key: keyof Filters, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };
@@ -110,20 +132,24 @@ const ReportFilters = ({ filters, onFiltersChange }: ReportFiltersProps) => {
                 All Categories
               </Label>
             </div>
-            {categories.map((cat) => (
-              <div className="flex items-center space-x-2" key={cat}>
-                <RadioGroupItem
-                  value={cat}
-                  id={`industry-${cat.replace(/\s+/g, "-")}`}
-                />
-                <Label
-                  htmlFor={`industry-${cat.replace(/\s+/g, "-")}`}
-                  className="text-sm"
-                >
-                  {cat}
-                </Label>
-              </div>
-            ))}
+            {loadingCategories ? (
+              <div className="text-sm text-gray-500">Loading categories...</div>
+            ) : (
+              categories.map((cat) => (
+                <div className="flex items-center space-x-2" key={cat}>
+                  <RadioGroupItem
+                    value={cat}
+                    id={`industry-${cat.replace(/\s+/g, "-")}`}
+                  />
+                  <Label
+                    htmlFor={`industry-${cat.replace(/\s+/g, "-")}`}
+                    className="text-sm"
+                  >
+                    {cat}
+                  </Label>
+                </div>
+              ))
+            )}
           </RadioGroup>
         </div>
         <Separator />
