@@ -28,7 +28,7 @@ interface Report {
   rating: number;
   reviewCount: number;
   summary: string;
-  tags: string[];
+  // tags field removed - using industry and country instead
   reportType: 'FREE' | 'PREMIUM';
   language: string;
   isPaid: boolean;
@@ -417,7 +417,7 @@ export default function ReportsPage() {
             <div className="relative max-w-2xl mx-auto">
               <Input
                 type="text"
-                placeholder="Search companies, industries, or tags..."
+                placeholder="Search companies or industries..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="h-14 pl-6 pr-16 text-lg bg-background text-foreground border-0 shadow-lg"
@@ -548,16 +548,12 @@ export default function ReportsPage() {
                         </p>
                         
                         <div className="flex flex-wrap gap-1">
-                          {report.tags.slice(0, 3).map((tag, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {report.tags.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{report.tags.length - 3} more
-                            </Badge>
-                          )}
+                          <Badge variant="outline" className="text-xs">
+                            {report.industry}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {report.country}
+                          </Badge>
                         </div>
                         
                         <div className="flex items-center justify-between pt-2">

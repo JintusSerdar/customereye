@@ -141,7 +141,7 @@ export interface FrontendReport {
   rating: number;
   reviewCount: number;
   summary: string;
-  tags: string[];
+  // tags field removed - using industry and country instead
   reportType: 'Free' | 'Premium';
   language: string;
   date: string;

@@ -54,7 +54,7 @@ export async function GET(
       rating: report.rating,
       reviewCount: report.reviewCount,
       summary: report.summary,
-      tags: report.tags,
+      // tags field removed
       reportType: report.reportType,
       language: report.language,
       isPaid: report.isPaid,

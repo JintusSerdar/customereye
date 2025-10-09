@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         { companyName: { contains: search, mode: 'insensitive' } },
         { title: { contains: search, mode: 'insensitive' } },
         { summary: { contains: search, mode: 'insensitive' } },
-        { tags: { has: search } },
+        // tags field removed - using industry and country instead
       ];
     }
 
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
           rating: true,
           reviewCount: true,
           summary: true,
-          tags: true,
+          // tags field removed
           reportType: true,
           language: true,
           isPaid: true,
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
       rating: report.rating,
       reviewCount: report.reviewCount,
       summary: report.summary,
-      tags: report.tags,
+      // tags field removed
       reportType: report.reportType,
       language: report.language,
       isPaid: report.isPaid,
