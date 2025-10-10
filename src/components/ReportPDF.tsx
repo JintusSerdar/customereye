@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import FormattedText from "./FormattedText";
 
 interface ReportData {
   id: string;
@@ -128,9 +129,9 @@ export default function ReportPDF({ companySlug }: ReportPDFProps) {
         
         {/* Rating Analysis Text */}
         <div className="bg-muted/30 rounded-lg p-6 mb-6">
-          <p className="text-muted-foreground leading-relaxed">
-            {getDataFiles('RATING_DISTRIBUTION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-          </p>
+          <FormattedText 
+            content={getDataFiles('RATING_DISTRIBUTION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+          />
         </div>
         
         {/* Rating Distribution Image */}
@@ -152,9 +153,9 @@ export default function ReportPDF({ companySlug }: ReportPDFProps) {
         
         {/* Word Cloud Analysis Text */}
         <div className="bg-muted/30 rounded-lg p-6 mb-6">
-          <p className="text-muted-foreground leading-relaxed">
-            {getDataFiles('OVERALL_WORDCLOUD').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-          </p>
+          <FormattedText 
+            content={getDataFiles('OVERALL_WORDCLOUD').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+          />
         </div>
         
         {/* Word Cloud Image */}
@@ -176,9 +177,9 @@ export default function ReportPDF({ companySlug }: ReportPDFProps) {
         
         {/* Customer Engagement Analysis Text */}
         <div className="bg-muted/30 rounded-lg p-6 mb-6">
-          <p className="text-muted-foreground leading-relaxed">
-            {getDataFiles('YEARLY_REPLIES').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-          </p>
+          <FormattedText 
+            content={getDataFiles('YEARLY_REPLIES').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+          />
         </div>
         
         {/* Yearly Replies Image */}
@@ -198,9 +199,9 @@ export default function ReportPDF({ companySlug }: ReportPDFProps) {
         <h2 className="text-3xl font-bold text-primary mb-6">CONCLUSION</h2>
         
         <div className="bg-muted/30 rounded-lg p-6">
-          <p className="text-muted-foreground leading-relaxed">
-            {getDataFiles('CONCLUSION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-          </p>
+          <FormattedText 
+            content={getDataFiles('CONCLUSION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+          />
         </div>
       </div>
 

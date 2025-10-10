@@ -1,25 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Star,
   TrendingUp,
-  TrendingDown,
   Users,
   Calendar,
   Building2,
   Share2,
   BookmarkPlus,
-  ExternalLink,
   MessageSquare,
   FileText,
   Award,
-  CheckCircle,
-  Clock,
-  ThumbsUp,
   Download,
   Globe,
   Tag,
@@ -30,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReportPDF from "@/components/ReportPDF";
+import FormattedText from "@/components/FormattedText";
 
 interface ReportData {
   id: string;
@@ -70,7 +65,7 @@ interface ReportData {
     title: string;
     content?: string;
     order: number;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
     createdAt: string;
   }>;
 }
@@ -204,110 +199,110 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
   const ratingBreakdown = parseRatingDistribution();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Breadcrumb */}
-      <div className="container mx-auto px-4 pt-8">
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/reports")}
-            className="flex items-center px-0"
-          >
-            <ArrowLeft size={16} className="mr-1" />
-            Back to Reports
-          </Button>
+      <div className="min-h-screen bg-background">
+        {/* Breadcrumb */}
+        <div className="container mx-auto px-4 pt-8">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push("/reports")}
+              className="flex items-center px-0"
+            >
+              <ArrowLeft size={16} className="mr-1" />
+              Back to Reports
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Company Header */}
-      <div className="container mx-auto px-4">
-        <div className="bg-card rounded-lg shadow-sm border p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-            <div className="flex items-center space-x-4 mb-4 md:mb-0">
-              <div className="text-5xl">{reportData.logo}</div>
-              <div>
-                <h1 className="text-3xl font-bold text-primary mb-2">
+        {/* Company Header */}
+        <div className="container mx-auto px-4">
+          <div className="bg-card rounded-lg shadow-sm border p-8 mb-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+              <div className="flex items-center space-x-4 mb-4 md:mb-0">
+                <div className="text-5xl">{reportData.logo}</div>
+                <div>
+                  <h1 className="text-3xl font-bold text-primary mb-2">
                   {reportData.companyName} Customer Reviews Analysis
-                </h1>
-                <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
-                  <div className="flex items-center space-x-1">
-                    <Building2 size={16} />
-                    <span>{reportData.industry}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
+                    <div className="flex items-center space-x-1">
+                      <Building2 size={16} />
+                      <span>{reportData.industry}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
                     <Globe size={16} />
                     <span>{reportData.country}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Calendar size={16} />
-                    <span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Calendar size={16} />
+                      <span>
                       Updated {new Date(reportData.publishedAt || reportData.createdAt).toLocaleDateString()}
-                    </span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">
+                  <Share2 size={16} className="mr-2" />
+                  Share
+                </Button>
+                <Button variant="outline" size="sm">
+                  <BookmarkPlus size={16} className="mr-2" />
+                  Save
+                </Button>
+              </div>
             </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm">
-                <Share2 size={16} className="mr-2" />
-                Share
-              </Button>
-              <Button variant="outline" size="sm">
-                <BookmarkPlus size={16} className="mr-2" />
-                Save
-              </Button>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-center space-x-2 mb-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <Card className="text-center">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
                   <Star className="fill-yellow-400 text-yellow-400" size={20} />
-                  <span className="text-2xl font-bold text-primary">
-                    {reportData.rating}
-                  </span>
-                </div>
+                    <span className="text-2xl font-bold text-primary">
+                      {reportData.rating}
+                    </span>
+                  </div>
                 <p className="text-sm text-muted-foreground">Overall Rating</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-center space-x-2 mb-2">
-                  <Users size={20} className="text-primary" />
-                  <span className="text-2xl font-bold text-primary">
-                    {reportData.reviewCount.toLocaleString()}
-                  </span>
-                </div>
+                </CardContent>
+              </Card>
+              <Card className="text-center">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <Users size={20} className="text-primary" />
+                    <span className="text-2xl font-bold text-primary">
+                      {reportData.reviewCount.toLocaleString()}
+                    </span>
+                  </div>
                 <p className="text-sm text-muted-foreground">Reviews Analyzed</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-center space-x-2 mb-2">
-                  <Award size={20} className="text-green-600" />
-                  <span className="text-2xl font-bold text-primary">
+                </CardContent>
+              </Card>
+              <Card className="text-center">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <Award size={20} className="text-green-600" />
+                    <span className="text-2xl font-bold text-primary">
                     {reportData.reportType}
-                  </span>
-                </div>
+                    </span>
+                  </div>
                 <p className="text-sm text-muted-foreground">Report Type</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-center space-x-2 mb-2">
-                  <MessageSquare size={20} className="text-blue-600" />
-                  <span className="text-2xl font-bold text-primary">
+                </CardContent>
+              </Card>
+              <Card className="text-center">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <MessageSquare size={20} className="text-blue-600" />
+                    <span className="text-2xl font-bold text-primary">
                     {reportData.dataFiles.length}
-                  </span>
-                </div>
+                    </span>
+                  </div>
                 <p className="text-sm text-muted-foreground">Data Files</p>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
 
-          <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">
               <Tag size={12} className="mr-1" />
               {reportData.industry}
@@ -315,54 +310,54 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
             <Badge variant="secondary">
               <Tag size={12} className="mr-1" />
               {reportData.country}
-            </Badge>
+                </Badge>
+            </div>
           </div>
-        </div>
 
-        {/* Main Content with Tabs */}
+          {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews Analysis</TabsTrigger>
-            <TabsTrigger value="engagement">Customer Engagement</TabsTrigger>
-            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-            <TabsTrigger value="pdf">Report Preview</TabsTrigger>
-          </TabsList>
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews Analysis</TabsTrigger>
+              <TabsTrigger value="engagement">Customer Engagement</TabsTrigger>
+              <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+                              <TabsTrigger value="pdf">Report Preview</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="overview" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* AI Summary */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-primary flex items-center">
-                      <FileText className="mr-2" size={20} />
-                      AI Analysis Summary
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-foreground leading-relaxed">
-                      {reportData.summary}
-                    </p>
-                  </CardContent>
-                </Card>
+            <TabsContent value="overview" className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-8">
+                  {/* AI Summary */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-primary flex items-center">
+                        <FileText className="mr-2" size={20} />
+                        AI Analysis Summary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-foreground leading-relaxed">
+                        {reportData.summary}
+                      </p>
+                    </CardContent>
+                  </Card>
 
                 {/* Rating Distribution */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-primary flex items-center">
-                      <TrendingUp className="mr-2 text-green-600" size={20} />
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-primary flex items-center">
+                        <TrendingUp className="mr-2 text-green-600" size={20} />
                       Rating Distribution
-                    </CardTitle>
-                  </CardHeader>
+                      </CardTitle>
+                    </CardHeader>
                   <CardContent className="space-y-4">
                     {ratingBreakdown.map((rating, index) => (
                       <div key={index} className="flex items-center space-x-3">
                         <div className="flex items-center space-x-1 w-16">
                           <span className="text-sm font-medium">{rating.stars}</span>
                           <Star size={12} className="fill-yellow-400 text-yellow-400" />
-                        </div>
+                          </div>
                         <div className="flex-1">
                           <Progress
                             value={rating.percentage}
@@ -371,22 +366,22 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
                         </div>
                         <div className="w-20 text-right">
                           <div className="text-sm font-medium">{rating.percentage}%</div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </div>
 
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* CTA Card */}
-                <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                  <CardContent className="p-6 text-center">
-                    <h3 className="text-xl font-bold mb-4">
+                {/* Sidebar */}
+                <div className="space-y-6">
+                  {/* CTA Card */}
+                  <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                    <CardContent className="p-6 text-center">
+                      <h3 className="text-xl font-bold mb-4">
                       {reportData.isPaid ? 'Purchase Full Report' : 'Free Report Available'}
-                    </h3>
-                    <p className="mb-6 text-primary-foreground/80">
+                      </h3>
+                      <p className="mb-6 text-primary-foreground/80">
                       {reportData.isPaid 
                         ? 'Get complete analysis with 50+ data points and actionable recommendations'
                         : 'This is a free report with basic insights and analysis'
@@ -401,20 +396,20 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
                         Download Free Report
                       </Button>
                     )}
-                    <Button
-                      variant="outline"
-                      className="w-full border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                    >
-                      Request Custom Analysis
-                    </Button>
-                  </CardContent>
-                </Card>
+                      <Button
+                        variant="outline"
+                        className="w-full border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                      >
+                        Request Custom Analysis
+                      </Button>
+                    </CardContent>
+                  </Card>
 
                 {/* Report Info */}
-                <Card>
-                  <CardHeader>
+                  <Card>
+                    <CardHeader>
                     <CardTitle className="text-primary">Report Details</CardTitle>
-                  </CardHeader>
+                    </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Type:</span>
@@ -433,24 +428,24 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Sections:</span>
                       <span className="text-sm">{reportData.sections.length}</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="reviews" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <TabsContent value="reviews" className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Word Cloud Analysis */}
-              <Card>
-                <CardHeader>
+                <Card>
+                  <CardHeader>
                   <CardTitle className="text-primary">Word Cloud Analysis</CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Most frequently mentioned words in customer reviews
-                  </p>
-                </CardHeader>
-                <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Most frequently mentioned words in customer reviews
+                    </p>
+                  </CardHeader>
+                  <CardContent>
                   {/* Word Cloud Image */}
                   {getDataFiles('OVERALL_WORDCLOUD').find(f => f.fileType === 'IMAGE') && (
                     <div className="mb-4">
@@ -462,18 +457,18 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
                     </div>
                   )}
                   <div className="bg-muted/30 rounded-lg p-4">
-                    <p className="text-sm text-muted-foreground">
-                      {getDataFiles('OVERALL_WORDCLOUD').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-                    </p>
+                  <FormattedText 
+                    content={getDataFiles('OVERALL_WORDCLOUD').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+                  />
                   </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
               {/* Rating Analysis */}
-              <Card>
-                <CardHeader>
+                <Card>
+                  <CardHeader>
                   <CardTitle className="text-primary">Rating Analysis</CardTitle>
-                </CardHeader>
+                  </CardHeader>
                 <CardContent>
                   {/* Rating Distribution Image */}
                   {getDataFiles('RATING_DISTRIBUTION').find(f => f.fileType === 'IMAGE') && (
@@ -483,27 +478,27 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
                         alt="Rating Distribution Chart"
                         className="w-full h-auto rounded-lg shadow-md"
                       />
-                    </div>
+                          </div>
                   )}
                   <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      {getDataFiles('RATING_DISTRIBUTION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+                  <FormattedText 
+                    content={getDataFiles('RATING_DISTRIBUTION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+                  />
+                      </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
-          <TabsContent value="engagement" className="space-y-8">
-            <Card>
-              <CardHeader>
+            <TabsContent value="engagement" className="space-y-8">
+                <Card>
+                  <CardHeader>
                 <CardTitle className="text-primary">Customer Engagement Analysis</CardTitle>
-                <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                   Company response patterns and customer engagement trends
-                </p>
-              </CardHeader>
-              <CardContent>
+                    </p>
+                  </CardHeader>
+                  <CardContent>
                 {/* Yearly Replies Image */}
                 {getDataFiles('YEARLY_REPLIES').find(f => f.fileType === 'IMAGE') && (
                   <div className="mb-6">
@@ -512,59 +507,59 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
                       alt="Yearly Replies Chart"
                       className="w-full h-auto rounded-lg shadow-md"
                     />
-                  </div>
+                      </div>
                 )}
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {getDataFiles('YEARLY_REPLIES').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                        <FormattedText 
+                    content={getDataFiles('YEARLY_REPLIES').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+                  />
+                    </div>
+                  </CardContent>
+                </Card>
+            </TabsContent>
 
-          <TabsContent value="recommendations" className="space-y-8">
-            <Card>
-              <CardHeader>
+            <TabsContent value="recommendations" className="space-y-8">
+                <Card>
+                  <CardHeader>
                 <CardTitle className="text-primary">Conclusion & Recommendations</CardTitle>
-              </CardHeader>
+                  </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {getDataFiles('CONCLUSION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                        <FormattedText 
+                    content={getDataFiles('CONCLUSION').find(f => f.fileType === 'TEXT')?.content || 'N/A'}
+                  />
+                    </div>
+                  </CardContent>
+                </Card>
+            </TabsContent>
 
-          <TabsContent value="pdf" className="space-y-8">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
+            <TabsContent value="pdf" className="space-y-8">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-primary">Report Preview</h2>
-                <div className="flex gap-3">
-                  <Button
-                    onClick={handleDownloadPDF}
-                    disabled={isDownloadingPDF}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    {isDownloadingPDF ? 'Generating...' : 'Download PDF'}
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={handleDownloadPDF}
+                      disabled={isDownloadingPDF}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {isDownloadingPDF ? 'Generating...' : 'Download PDF'}
+                    </Button>
                   <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                     {reportData.isPaid ? 'Buy Report' : 'Download Free'}
-                  </Button>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <p className="text-muted-foreground">
-                Preview the complete analysis report with detailed insights, charts, and recommendations. 
-                Click "Download PDF" to get a high-quality PDF version of this report.
-              </p>
+                <p className="text-muted-foreground">
+                  Preview the complete analysis report with detailed insights, charts, and recommendations. 
+                  Click &quot;Download PDF&quot; to get a high-quality PDF version of this report.
+                </p>
               <ReportPDF companySlug={reportData.companySlug} />
-            </div>
-          </TabsContent>
-        </Tabs>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
   );
 }
