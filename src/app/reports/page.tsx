@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Search, Filter, Grid, List, Star, Users, Building2, Globe, Calendar } from "lucide-react";
+import { Filter, Grid, List, Star, Users, Building2, Globe, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import SearchBar from "@/components/SearchBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -275,6 +274,8 @@ export default function ReportsPage() {
         industry: industryParam
       }));
     }
+    
+    setUrlParamsProcessed(true);
   }, []);
 
   const handleSearch = (query: string) => {
@@ -308,6 +309,7 @@ export default function ReportsPage() {
     country: "all",
     isPaid: "all",
   });
+  const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -417,9 +419,13 @@ export default function ReportsPage() {
     return pages;
   };
 
+  // Initial load and when filters change (only after URL params are processed)
   useEffect(() => {
-    fetchReports(1);
-  }, [fetchReports]);
+    if (urlParamsProcessed) {
+      fetchReports(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlParamsProcessed, searchTerm, filters.industry, filters.country, filters.rating, filters.isPaid, sortBy]);
 
   if (loading && reports.length === 0) {
     return (
