@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, Filter, Grid, List, Star, Users, Building2, Globe, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import SearchBar from "@/components/SearchBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -257,6 +258,49 @@ export default function ReportsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("a-z");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Initialize search term and filters from URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    const industryParam = urlParams.get('industry');
+    
+    if (searchParam) {
+      setSearchTerm(searchParam);
+    }
+    
+    if (industryParam) {
+      setFilters(prev => ({
+        ...prev,
+        industry: industryParam
+      }));
+    }
+  }, []);
+
+  const handleSearch = (query: string) => {
+    setSearchTerm(query);
+    // The search will be triggered automatically by the useEffect
+  };
+
+  const handleCompanySelect = async (companyName: string) => {
+    try {
+      // Fetch company details to get the slug
+      const response = await fetch(`/api/search/company?name=${encodeURIComponent(companyName)}`);
+      const data = await response.json();
+      
+      if (data.slug) {
+        // Navigate directly to the company report
+        window.location.href = `/reports/${data.slug}`;
+      } else {
+        // Fallback to search if company not found
+        handleSearch(companyName);
+      }
+    } catch (error) {
+      console.error('Error fetching company:', error);
+      // Fallback to search
+      handleSearch(companyName);
+    }
+  };
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     industry: "all",
@@ -413,16 +457,15 @@ export default function ReportsPage() {
               Browse our comprehensive library of AI-generated customer insight
               reports across all industries
             </p>
-            {/* Search bar */}
-            <div className="relative max-w-2xl mx-auto">
-              <Input
-                type="text"
-                placeholder="Search companies or industries..."
+            {/* Search bar with autocomplete */}
+            <div className="max-w-4xl mx-auto">
+              <SearchBar
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-14 pl-6 pr-16 text-lg bg-background text-foreground border-0 shadow-lg"
+                onChange={setSearchTerm}
+                onSearch={handleSearch}
+                onCompanySelect={handleCompanySelect}
+                placeholder="Search companies or industries..."
               />
-              <Search className="absolute right-4 top-4 h-6 w-6 text-muted-foreground" />
             </div>
           </div>
         </div>

@@ -11,7 +11,6 @@ import {
   Building2,
   Globe,
   CheckCircle,
-  Play,
   Quote,
   Award,
   BarChart3,
@@ -20,7 +19,7 @@ import {
   Database,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import SearchBar from "@/components/SearchBar";
 import {
   Card,
   CardContent,
@@ -33,6 +32,40 @@ import { Badge } from "@/components/ui/badge";
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  const handleSearch = (query: string) => {
+    if (query.trim()) {
+      // Navigate to reports page with search query
+      window.location.href = `/reports?search=${encodeURIComponent(query)}`;
+    }
+  };
+
+  const handleIndustrySearch = (industry: string) => {
+    if (industry.trim()) {
+      // Navigate to reports page with industry filter
+      window.location.href = `/reports?industry=${encodeURIComponent(industry)}`;
+    }
+  };
+
+  const handleCompanySelect = async (companyName: string) => {
+    try {
+      // Fetch company details to get the slug
+      const response = await fetch(`/api/search/company?name=${encodeURIComponent(companyName)}`);
+      const data = await response.json();
+      
+      if (data.slug) {
+        // Navigate directly to the company report
+        window.location.href = `/reports/${data.slug}`;
+      } else {
+        // Fallback to search if company not found
+        handleSearch(companyName);
+      }
+    } catch (error) {
+      console.error('Error fetching company:', error);
+      // Fallback to search
+      handleSearch(companyName);
+    }
+  };
 
   const featuredCompanies = [
     {
@@ -253,42 +286,31 @@ const Index = () => {
             competitive advantages instantly.
           </p>
 
-          {/* Search Bar */}
-          <div className="bg-background/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-primary-foreground/20 animate-slide-up-delay">
-            <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
-              <div className="relative flex-1">
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-                  size={20}
-                />
-                <Input
-                  placeholder="Search for any company (e.g., Local Restaurant, Tech Startup...)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 py-3 text-lg bg-background border-0 focus:ring-2 focus:ring-secondary text-foreground"
-                />
-              </div>
-              <Button
-                size="lg"
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 font-semibold"
-              >
-                <Search className="mr-2" size={20} />
-                Search Reports
-              </Button>
+          {/* Search Bar with Autocomplete */}
+          <div className="mb-8 animate-slide-up-delay">
+            <div className="max-w-4xl mx-auto">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onSearch={handleSearch}
+                onCompanySelect={handleCompanySelect}
+                placeholder="Search for any company (e.g., Local Restaurant, Tech Startup...)"
+              />
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-primary-foreground/70 mb-8 animate-fade-in-delay-2">
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-primary-foreground/70 mb-8 animate-fade-in-delay-2 relative z-10">
             <span className="font-medium">Popular searches:</span>
             {[
-              "Local Restaurant",
-              "Tech Startup",
-              "Fitness Center",
-              "Auto Repair",
-              "Beauty Salon",
+              "Business Services",
+              "Money & Insurance", 
+              "Beauty & Wellbeing",
+              "Electronics & Technology",
+              "Events & Entertainment",
             ].map((company) => (
               <button
                 key={company}
+                onClick={() => handleIndustrySearch(company)}
                 className="px-4 py-2 bg-primary-foreground/10 rounded-full hover:bg-primary-foreground/20 transition-colors border border-primary-foreground/20 hover:border-secondary/50"
               >
                 {company}
@@ -296,22 +318,6 @@ const Index = () => {
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-delay-3">
-            <Button
-              size="lg"
-              className="bg-background text-primary hover:bg-background/90 font-semibold"
-            >
-              <Play className="mr-2" size={20} />
-              Watch Demo
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-background text-primary hover:bg-background/90 font-semibold"
-            >
-              View Sample Report
-            </Button>
-          </div>
         </div>
       </section>
 
